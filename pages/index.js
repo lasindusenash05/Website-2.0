@@ -10,10 +10,16 @@ export default function Home() {
     setLoading(true);
     try {
       const res = await fetch('/api/flashcards');
+      if (!res.ok) throw new Error('Failed to fetch');
       const data = await res.json();
-      setFlashcards(data);
+      if (Array.isArray(data)) {
+        setFlashcards(data);
+      } else {
+        setFlashcards([]);
+      }
     } catch (error) {
-      alert('Failed to load flashcards');
+      console.error('Error loading flashcards:', error);
+      setFlashcards([]);
     }
     setLoading(false);
   };
@@ -30,25 +36,27 @@ export default function Home() {
 
     const id = Date.now().toString();
     try {
-      await fetch('/api/flashcards', {
+      const res = await fetch('/api/flashcards', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, front, back }),
       });
+      if (!res.ok) throw new Error('Add failed');
       setFlashcards([...flashcards, { id, front, back }]);
       setFront('');
       setBack('');
-    } catch (error) {
+    } catch (err) {
       alert('Failed to add flashcard');
     }
   };
 
   const deleteFlashcard = async (id) => {
     try {
-      await fetch(`/api/flashcards/${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/flashcards/${id}`, { method: 'DELETE' });
+      if (!res.ok) throw new Error('Delete failed');
       setFlashcards(flashcards.filter(card => card.id !== id));
     } catch (error) {
-      alert('Failed to delete flashcard');
+      alert('Failed to delete');
     }
   };
 
@@ -117,4 +125,4 @@ export default function Home() {
       )}
     </div>
   );
-    }
+      }
