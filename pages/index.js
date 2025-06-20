@@ -42,7 +42,8 @@ export default function Home() {
         body: JSON.stringify({ id, front, back }),
       });
       if (!res.ok) throw new Error('Add failed');
-      setFlashcards([...flashcards, { id, front, back }]);
+
+      await fetchFlashcards(); // ⏬ Refresh after adding
       setFront('');
       setBack('');
     } catch (err) {
@@ -125,4 +126,4 @@ export default function Home() {
       )}
     </div>
   );
-      }
+    }
